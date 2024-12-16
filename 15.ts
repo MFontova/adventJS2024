@@ -5,48 +5,34 @@ function drawTable(data: Array<Record<string, string | number>>): string {
   }
 
   const keys: string[] = Object.keys(data[0])
-  const firstColValues: string[] = []
+  const columnLengths = keys.map(key => key.length)
 
-  const secondColValues: string[] = []
-
-  data.forEach(element => {
-    firstColValues.push(element[keys[0]].toString())
-    secondColValues.push(element[keys[1]].toString())
+  const rows = data.map(row => {
+    return keys.map((key, index) => {
+      const value = row[key].toString()
+      columnLengths[index] = Math.max(columnLengths[index], value.length)
+      return value
+    })
   })
 
-  let firstColLength = keys[0].length
-  let secondColLength = keys[1].length
-  firstColValues.forEach(val => {
-    if(val.length > firstColLength) {
-      firstColLength = val.length
-    }
-  })
-  secondColValues.forEach(val => {
-    if(val.length > secondColLength) {
-      secondColLength = val.length
-    }
-  })
+  const line = `+-${columnLengths.map(length => '-'.repeat(length)).join('-+-')}-+`
+  const headers = `| ${keys.map((key, index) => toCamelCase(key).padEnd(columnLengths[index])).join(' | ')} |`
 
-  const line = `+-${'-'.repeat(firstColLength)}-+-${'-'.repeat(secondColLength)}-+`
-  const endLine = `+-${'-'.repeat(firstColLength)}-+-${'-'.repeat(secondColLength)}-+`
-  const headers = `| ${toCamelCase(keys[0]).padEnd(firstColLength)} | ${toCamelCase(keys[1]).padEnd(secondColLength)} |`
-  
-  let body = ''
-  for (let i = 0; i < firstColValues.length; i++) {
-    body += `
-| ${firstColValues[i].padEnd(firstColLength)} | ${secondColValues[i].padEnd(secondColLength)} |`
-  }
+  const body = rows.map(row => {
+    return `| ${row.map((value, index) => value.padEnd(columnLengths[index])).join(' | ')}`
+  }).join('\n')
 
-  console.log(`${line}
-${headers}
-${line}${body}
-${endLine}`)
-
-  return line + headers + line + body + endLine
+  return `${line}\n${headers}\n${line}\n${body}\n${line}`
 }
 
-drawTable([
+console.log(drawTable([
   { name: 'Alice', city: 'London' },
   { name: 'Bob', city: 'Paris' },
   { name: 'Charlie', city: 'New York' }
-])
+]))
+
+console.log(drawTable([
+  { gift: 'Doll', quantity: 10 },
+  { gift: 'Book', quantity: 5 },
+  { gift: 'Music CD', quantity: 1 }
+]))
