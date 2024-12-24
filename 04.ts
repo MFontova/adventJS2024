@@ -12,5 +12,5 @@ function createXmasTree(height: number, ornament: string): string {
   return tree.join('\n') + '\n' + base + '\n' + base
 }
 
-const tree = createXmasTree(5, '*')
-console.log(tree)
+const xmasTree = createXmasTree(5, '*')
+console.log(xmasTree)
